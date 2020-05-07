@@ -11,6 +11,8 @@ import org.junit.Test
 class ProductRepositoryTest {
 
     lateinit var repository: IProductRepository
+    private var productResponse = ProductResponse()
+
     @MockK(relaxed = true)
     private lateinit var repositoryCallback: IProductRepository.LoadProductCallback
 
@@ -21,6 +23,11 @@ class ProductRepositoryTest {
     fun setupPresenter() {
         MockKAnnotations.init(this)
         repository = ProductRepository(productAPI)
+
+        productResponse.id = "pixel3"
+        productResponse.name = "Google Pixel 3"
+        productResponse.price = 27000
+        productResponse.desc = "Desc"
     }
 
     @Test
@@ -34,5 +41,23 @@ class ProductRepositoryTest {
         repository.getProduct(productId, repositoryCallback)
 
         verify { productAPI.getProduct(any(), capture(slot)) }
+    }
+
+    @Test
+    fun getProductTestCallback() {
+        //驗證跟Repository取得資料
+        val productId = "pixel3"
+
+        //驗證是否有呼叫IProductAPI.getProduct
+        val slot = slot<IProductAPI.LoadAPICallback>()
+
+        every { productAPI.getProduct(any(), capture(slot)) }
+            .answers {
+                //將callback攔截下載並指定productResponse的值。
+                slot.captured.onGetResult(productResponse)
+            }
+        repository.getProduct(productId, repositoryCallback)
+
+        verify { repositoryCallback.onProductResult(productResponse) }
     }
 }
