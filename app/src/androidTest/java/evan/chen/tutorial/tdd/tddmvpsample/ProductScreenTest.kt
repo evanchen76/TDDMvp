@@ -23,5 +23,16 @@ import org.junit.Rule
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class ProductScreenTest {
-    
+
+    @get:Rule
+    var activityActivityTestRule = ActivityTestRule(ProductActivity::class.java, true, false)
+
+    @Test
+    fun productViewTest() {
+        val intent = Intent()
+        activityActivityTestRule.launchActivity(intent)
+        Thread.sleep(2000)
+        Espresso.onView(ViewMatchers.withId(R.id.productName))
+            .check(ViewAssertions.matches(ViewMatchers.withText("Google Pixel 3")))
+    }
 }
