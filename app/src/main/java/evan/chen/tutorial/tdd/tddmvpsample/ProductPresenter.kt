@@ -8,7 +8,7 @@ class ProductPresenter(
         repository.getProduct(productId, object : IProductRepository.LoadProductCallback {
             //還沒處理View的callback
             override fun onProductResult(productResponse: ProductResponse) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                view.onGetResult(productResponse)
             }
         })
     }
